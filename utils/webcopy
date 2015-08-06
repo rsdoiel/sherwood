@@ -1,0 +1,112 @@
+#!/bin/bash
+
+#
+# NOTES: Need to consider switching from wget to axel for more through put
+# and higher performance. Axel is available in Ubuntu and Mac Ports (e.g. port info axel).
+#
+
+function usage () {
+    echo 'USAGE: webcopy TARGET_URL'
+    echo "$1"
+    exit 1
+}
+
+function runSpider() {
+    # Calculate the hostname directory.
+    H=${1/*:\/\/}
+    H=${H/\/*}
+    wget --mirror \
+        --force-directories \
+        --timestamping \
+        --page-requisites \
+        --convert-links \
+        --no-cache \
+        --base=$1 \
+        --referer=$1 \
+        --domain $H,ajax.googleapis.com \
+        -H \
+        $1
+    
+    # Back up our mirrored copy to make debugging easier.
+    zip -r $H-original.zip $H ajax.googleapis.com
+}
+
+function relinkSavedFiles() {
+    H=${1/*:\/\/}
+    H=${H/\/*}
+    URL=${1//\//\\\/}
+    URL_REPLACE_EXP="s/$URL//g"
+                
+    echo "Relinking saved files." 
+    find $H -type f | grep -viE '\.(pdf|jpg|gif|png|mov|avi|woff|eot|ttf|svg)' | while read ITEM; do
+        # Convert google cache braking parameters and post ids.
+        TARGET=$(grep -E "\w+\?\w+=" "$ITEM")
+        if [ "$TARGET" != "" ]; then
+             #echo -n "."
+             #echo ""
+             echo "Updating $ITEM"
+             sed --in-place=.bak -E -e "s/\.css\?v=[0-9]+/.css/g" \
+                            -e "s/\.js\?v=[0-9]+/.js/g" \
+                            -e "s/index\.html\?p=[0-9]+/page-&.html/g" \
+                            -e "s/index.html\?p=//g" \
+                            -e $URL_REPLACE_EXP \
+                            -e "s/..\/ajax.googleapis.com/ajax.googleapis.com/g" \
+                            "$ITEM"
+             if [ -f "$ITEM.bak" ]; then
+                 /bin/rm "$ITEM.bak"
+             fi
+        else
+             #echo -n "_"
+             echo "_"
+        fi
+    done
+}
+
+function renameSavedFiles() {
+    H=${1/*:\/\/}
+    H=${H/\/*}
+    if [ -d ajax.googleapis.com ]; then
+        cp -vR ajax.googleapis.com $H/
+    fi
+    find $H -type f | grep -E '\.(js|css)\?\w+=\w+' | while read ITEM; do
+        NEW_NAME=${ITEM/\?*/}
+        echo "Renaming $ITEM to $NEW_NAME"
+        mv "$ITEM" "$NEW_NAME"
+    done
+    find $H -type f | grep -E '\.html\?p=\w+' | while read ITEM; do
+        ID=$(echo "$ITEM" | cut -d = -f 2)
+        NEW_PATH=$(echo "$ITEM" | sed -E -e "s/index\.html\?p=[0-9]+//g")
+        NEW_NAME="page-$ID.html"
+        echo "Renaming $ITEM to $NEW_PATH$NEW_NAME"
+        mv "$ITEM" "$NEW_PATH$NEW_NAME"
+    done
+}
+
+function checkFor() {
+    chk=$(which $1)
+    if [ "$chk" = "" ]; then
+        usage "missing $1"
+    fi
+}
+
+if [ "$1" != "" ]; then
+    URL="$1"
+    export URL
+else
+    echo -n "Enter a URL to copy: "
+    read URL
+    echo "Target: $URL"
+    export URL
+fi
+
+if [ "$URL" = "" ]; then
+   usage "Missing URL"
+fi
+checkFor zip
+checkFor find
+checkFor sed
+
+echo "Getting ready to spider $URL"
+runSpider "$URL"
+renameSavedFiles "$URL"
+relinkSavedFiles "$URL"

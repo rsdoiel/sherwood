@@ -1,0 +1,87 @@
+#!/usr/bin/env groovy
+
+def debug(msg) {
+    println "DEBUG:${msg}"
+}
+
+def usage(msg, exit_code, options) {
+    def u = "USAGE: webcopy_fixurls.groovy WEBCOPY_TARGET_FOLDER"
+    if (exit_code != 0) {
+        System.err.println "${u}\n"
+        options.each{k,v->
+            println "\t${k}\t$v"
+        }
+        System.err.println "\n${msg}"
+        System.exit(0)
+    }
+    println "${u}\n"
+    options.each{k,v->
+        println "\t${k}\t$v"
+    }
+    println "\n${msg}"
+    System.exit(0)
+}
+
+def keys(obj) {
+    def obj_keys = []
+    if (obj instanceof Object) {
+        obj.each{k,v->
+            obj_keys << k
+        }
+    }
+    return obj_keys
+}
+
+
+def info(msg) {
+    System.out.println(msg)
+}
+
+def warn(msg) {
+    System.err.println(msg)
+}
+
+def error(msg) {
+    warn msg    
+    System.exit(1)
+}
+
+def process(directory_name) {
+    info "Processing ${directory_name}"
+    warn "process() not implemented."
+    return false
+}
+
+public static void main(args) {
+    def options = ["--help": "Display this help message"]
+    def option_keys = keys(options)
+    def ordered_args = []
+
+    if (args.size() > 0) {
+        args.each{
+            if (it == "-h" || it == "--help") {
+                usage "", 0, options
+            } else if (option_keys.contains(it.trim())) {
+                debug "Command line option ${it}"
+            } else if (it.substring(0,1) == "-") {
+                usage "${it} is an invalid option.", 1, options
+            } else {
+                ordered_args << it.trim()
+            }
+        }
+    }
+
+    if (ordered_args.size() < 1) {
+        usage "Missing WEB_COPY_FOLDER", 1, options
+    }
+    ordered_args.each{
+        def folderFP = new File(it.trim())
+
+        if (folderFP.exists() == false) {
+            error "${it} does not exist"
+        } else {
+            process it.trim()
+        }
+    }
+}
+
