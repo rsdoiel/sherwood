@@ -14,6 +14,7 @@ into an ebook. The tools are organized to complete several steps
 
 ## Requirements
 
++ Presumes a Linux based system like a Raspberry Pi (e.g. the sed on Mac OS X is broken for the purposes of this set of tools)
 + wget
 + zip
 + Groovy (>= 2.4.4)
