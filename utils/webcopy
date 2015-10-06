@@ -108,5 +108,6 @@ checkFor sed
 
 echo "Getting ready to spider $URL"
 runSpider "$URL"
-renameSavedFiles "$URL"
-relinkSavedFiles "$URL"
+echo "Continue processing using utils/migrate.sh"
+#renameSavedFiles "$URL"
+#relinkSavedFiles "$URL"
