@@ -1,8 +1,7 @@
 
 # sherwood
 
-This is a set of tools I am developing to help my friend translate a website project
-into an ebook. The tools are organized to complete several steps
+This is a set of tools I am developing to help my friend translate a website project into an ebook. The tools are organized to complete several steps
 
 + Mirror the existing website
     + Save of zip of the unaltered mirror
@@ -15,8 +14,9 @@ into an ebook. The tools are organized to complete several steps
 ## Requirements
 
 + Presumes a Linux based system like a Raspberry Pi (e.g. the sed on Mac OS X is broken for the purposes of this set of tools)
++ Bash
 + wget
 + zip
-+ Groovy (>= 2.4.4)
++ [shorthand](https://github.com/rsdoiel/shorthand)
 
 
