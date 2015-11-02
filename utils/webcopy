@@ -16,6 +16,9 @@ function runSpider() {
     H=${1/*:\/\/}
     H=${H/\/*}
     wget --mirror \
+        --header='Accept-Charset: UTF-8' \
+        --local-encoding=UTF-8 \
+        --remote-encoding=UTF-8 \
         --force-directories \
         --timestamping \
         --page-requisites \
@@ -26,7 +29,7 @@ function runSpider() {
         --domain $H,ajax.googleapis.com \
         -H \
         $1
-    
+
     # Back up our mirrored copy to make debugging easier.
     zip -r $H-original.zip $H ajax.googleapis.com
 }
@@ -36,8 +39,8 @@ function relinkSavedFiles() {
     H=${H/\/*}
     URL=${1//\//\\\/}
     URL_REPLACE_EXP="s/$URL//g"
-                
-    echo "Relinking saved files." 
+
+    echo "Relinking saved files."
     find $H -type f | grep -viE '\.(pdf|jpg|gif|png|mov|avi|woff|eot|ttf|svg)' | while read ITEM; do
         # Convert google cache braking parameters and post ids.
         TARGET=$(grep -E "\w+\?\w+=" "$ITEM")
