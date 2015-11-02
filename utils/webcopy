@@ -15,10 +15,10 @@ function runSpider() {
     # Calculate the hostname directory.
     H=${1/*:\/\/}
     H=${H/\/*}
+    #--remote-encoding=UTF-8 \
     wget --mirror \
-        --header='Accept-Charset: UTF-8' \
+        --header='Accept-Charset: utf-8' \
         --local-encoding=UTF-8 \
-        --remote-encoding=UTF-8 \
         --force-directories \
         --timestamping \
         --page-requisites \
