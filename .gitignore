@@ -1,6 +1,9 @@
 .DL_Store
+.localized
 *~
 *.zip
 www.*
 pass1
 pass2
+site
+rewriteurls.shorthand
