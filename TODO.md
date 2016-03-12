@@ -6,4 +6,7 @@
 + Figure out how to generate a Lunr.js index file, look at Bleve as an option of creating a service that could run on Roger's computer for editing and extending his content
 + See what Golang packages already support rendering epubs or review the layout structure and see what templates need to be written for converting the text
 
+## References
 
++ [Bluemonday](https://github.com/microcosm-cc/bluemonday) use this to cleanup broken HTML
++ [to-markdown.js](https://github.com/domchristie/to-markdown) see if this can run under Otto
